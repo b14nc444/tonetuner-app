@@ -2,6 +2,7 @@
 
 export * from "./api";
 export * from "./tone";
+export * from "./ui";
 
 // 공통 타입들
 export interface BaseEntity {
@@ -19,6 +20,8 @@ export interface AppState {
   currentScreen: "main" | "history" | "settings";
   isLoading: boolean;
   error: string | null;
+  theme: "light" | "dark";
+  language: "ko" | "en";
 }
 
 // 유틸리티 타입들

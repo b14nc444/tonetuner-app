@@ -1,0 +1,204 @@
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Clipboard,
+} from "react-native";
+import { ToneConversionResponse, TONE_OPTIONS } from "../../types/tone";
+import { Card } from "../common/Card";
+import { Button } from "../common/Button";
+
+interface ResultDisplayProps {
+  result: ToneConversionResponse | null;
+  isLoading?: boolean;
+  onCopy?: (text: string) => void;
+  testID?: string;
+}
+
+export const ResultDisplay: React.FC<ResultDisplayProps> = ({
+  result,
+  isLoading = false,
+  onCopy,
+  testID,
+}) => {
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const handleCopy = async () => {
+    if (!result?.convertedText) return;
+
+    try {
+      await Clipboard.setString(result.convertedText);
+      setCopySuccess(true);
+      onCopy?.(result.convertedText);
+      Alert.alert("복사됨", "텍스트가 클립보드에 복사되었습니다.");
+
+      // 2초 후 복사 성공 상태 초기화
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (error) {
+      console.error("복사 실패:", error);
+      Alert.alert("오류", "복사에 실패했습니다.");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Card testID={`${testID}-loading`}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>텍스트를 변환하고 있습니다...</Text>
+        </View>
+      </Card>
+    );
+  }
+
+  if (!result) {
+    return null;
+  }
+
+  const toneOption = TONE_OPTIONS.find((t) => t.id === result.tone);
+
+  return (
+    <Card testID={testID}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>변환 결과</Text>
+          <Button
+            title={copySuccess ? "복사됨" : "복사"}
+            onPress={handleCopy}
+            variant="outline"
+            size="small"
+            icon={copySuccess ? "✅" : "📋"}
+            disabled={!result.convertedText}
+            testID={`${testID}-copy-button`}
+          />
+        </View>
+
+        <View style={styles.metaContainer}>
+          {toneOption && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeIcon}>{toneOption.icon}</Text>
+              <Text style={styles.badgeText}>{toneOption.name}</Text>
+            </View>
+          )}
+          <Text style={styles.timestamp}>
+            {new Date(result.timestamp).toLocaleTimeString()}
+          </Text>
+        </View>
+
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>{result.convertedText}</Text>
+        </View>
+
+        {result.originalText !== result.convertedText && (
+          <View style={styles.originalContainer}>
+            <Text style={styles.originalLabel}>원본 텍스트</Text>
+            <Text style={styles.originalText}>{result.originalText}</Text>
+          </View>
+        )}
+
+        <View style={styles.statsContainer}>
+          <Text style={styles.statsText}>
+            단어 수: {result.wordCount}개
+          </Text>
+          <Text style={styles.statsText}>
+            처리 시간: {result.processingTime}ms
+          </Text>
+        </View>
+      </View>
+    </Card>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 0,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#6c757d",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#495057",
+  },
+  metaContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e9ecef",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  badgeIcon: {
+    fontSize: 16,
+    marginRight: 4,
+  },
+  badgeText: {
+    fontSize: 12,
+    color: "#495057",
+    fontWeight: "500",
+  },
+  timestamp: {
+    fontSize: 12,
+    color: "#6c757d",
+  },
+  resultContainer: {
+    backgroundColor: "#f8f9fa",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+  },
+  resultText: {
+    fontSize: 16,
+    color: "#495057",
+    lineHeight: 24,
+  },
+  originalContainer: {
+    borderTopWidth: 1,
+    borderTopColor: "#e9ecef",
+    paddingTop: 16,
+    marginBottom: 16,
+  },
+  originalLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#6c757d",
+    marginBottom: 8,
+  },
+  originalText: {
+    fontSize: 14,
+    color: "#6c757d",
+    lineHeight: 20,
+    fontStyle: "italic",
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderTopWidth: 1,
+    borderTopColor: "#e9ecef",
+    paddingTop: 12,
+  },
+  statsText: {
+    fontSize: 12,
+    color: "#6c757d",
+  },
+});

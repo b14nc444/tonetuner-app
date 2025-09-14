@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { AppState, ToneConversionResponse, ToneType } from "../types";
+import { AppState, ToneConversionResponse, ToneType, ToneConversionHistory } from "../types";
 
 interface AppStore extends AppState {
   // 상태
   inputText: string;
   selectedTone: ToneType;
   conversionResult: ToneConversionResponse | null;
-  conversionHistory: ToneConversionResponse[];
+  conversionHistory: ToneConversionHistory[];
 
   // 액션
   setInputText: (text: string) => void;
@@ -18,6 +18,8 @@ interface AppStore extends AppState {
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
   setCurrentScreen: (screen: "main" | "history" | "settings") => void;
+  setTheme: (theme: "light" | "dark") => void;
+  setLanguage: (language: "ko" | "en") => void;
 
   // 복합 액션
   reset: () => void;
@@ -29,6 +31,8 @@ const initialState: Omit<AppStore, "actions"> = {
   currentScreen: "main",
   isLoading: false,
   error: null,
+  theme: "light",
+  language: "ko",
 
   // AppStore specific
   inputText: "",
@@ -51,12 +55,23 @@ export const useAppStore = create<AppStore>()(
 
         // 히스토리 관리
         addToHistory: (result: ToneConversionResponse) =>
-          set((state) => ({
-            conversionHistory: [result, ...state.conversionHistory].slice(
-              0,
-              50
-            ), // 최대 50개 유지
-          })),
+          set((state) => {
+            const historyItem: ToneConversionHistory = {
+              id: result.id,
+              request: {
+                text: result.originalText,
+                tone: result.tone,
+              },
+              response: result,
+              createdAt: result.timestamp,
+            };
+            return {
+              conversionHistory: [historyItem, ...state.conversionHistory].slice(
+                0,
+                50
+              ), // 최대 50개 유지
+            };
+          }),
         clearHistory: () => set({ conversionHistory: [] }),
 
         // 로딩 및 에러 상태
@@ -64,6 +79,8 @@ export const useAppStore = create<AppStore>()(
         setError: (error: string | null) => set({ error }),
         setCurrentScreen: (screen: "main" | "history" | "settings") =>
           set({ currentScreen: screen }),
+        setTheme: (theme: "light" | "dark") => set({ theme }),
+        setLanguage: (language: "ko" | "en") => set({ language }),
 
         // 복합 액션
         reset: () =>

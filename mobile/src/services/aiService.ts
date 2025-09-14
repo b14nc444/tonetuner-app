@@ -54,13 +54,20 @@ export class AIService {
       const aiResponse = response.data as AIResponse;
       const convertedText = aiResponse.choices[0]?.message?.content || "";
 
+      const startTime = Date.now();
+      const wordCount = request.text.split(/\s+/).length;
+      const processingTime = Date.now() - startTime;
+
       return {
         success: true,
         data: {
+          id: `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           originalText: request.text,
           convertedText: convertedText.trim(),
           tone: request.tone,
           timestamp: Date.now(),
+          wordCount,
+          processingTime,
         },
       };
     } catch (error) {
@@ -224,13 +231,20 @@ export class AIService {
       setTimeout(resolve, 1000 + Math.random() * 1000)
     );
 
+    const startTime = Date.now();
+    const wordCount = request.text.split(/\s+/).length;
+    const processingTime = Date.now() - startTime;
+
     return {
       success: true,
       data: {
+        id: `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         originalText: request.text,
         convertedText: convertedText,
         tone: request.tone,
         timestamp: Date.now(),
+        wordCount,
+        processingTime,
       },
     };
   }
