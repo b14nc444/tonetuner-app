@@ -44,6 +44,42 @@ const initialState: Omit<AppStore, "actions"> = {
   selectedTone: "formal",
   conversionResult: null,
   conversionHistory: [],
+  setInputText: function (text: string): void {
+    throw new Error("Function not implemented.");
+  },
+  setSelectedTone: function (tone: ToneType): void {
+    throw new Error("Function not implemented.");
+  },
+  setConversionResult: function (result: ToneConversionResponse | null): void {
+    throw new Error("Function not implemented.");
+  },
+  addToHistory: function (result: ToneConversionResponse): void {
+    throw new Error("Function not implemented.");
+  },
+  clearHistory: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  setLoading: function (isLoading: boolean): void {
+    throw new Error("Function not implemented.");
+  },
+  setError: function (error: string | null): void {
+    throw new Error("Function not implemented.");
+  },
+  setCurrentScreen: function (screen: "main" | "history" | "settings"): void {
+    throw new Error("Function not implemented.");
+  },
+  setTheme: function (theme: "light" | "dark"): void {
+    throw new Error("Function not implemented.");
+  },
+  setLanguage: function (language: "ko" | "en"): void {
+    throw new Error("Function not implemented.");
+  },
+  reset: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  convertText: function (): Promise<void> {
+    throw new Error("Function not implemented.");
+  },
 };
 
 export const useAppStore = create<AppStore>()(
