@@ -6,6 +6,7 @@ import {
   ToneConversionResponse,
   ToneType,
 } from "../types";
+import { config, validateConfig } from "./config";
 
 // AI 서비스 클래스
 export class AIService {
@@ -252,7 +253,14 @@ export class AIService {
 
 // 기본 인스턴스 생성
 export const aiService = new AIService({
-  baseUrl: process.env.REACT_APP_AI_API_URL || "https://api.openai.com",
-  apiKey: process.env.REACT_APP_AI_API_KEY || "",
+  baseUrl: config.apiBaseUrl,
+  apiKey: config.openaiApiKey || "",
   timeout: 30000,
 });
+
+// 환경 변수 검증
+if (!validateConfig()) {
+  console.warn(
+    "환경 변수가 올바르게 설정되지 않았습니다. .env 파일을 확인해주세요."
+  );
+}
