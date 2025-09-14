@@ -1,48 +1,38 @@
 // 톤 관련 타입 정의
 
-export type ToneType = "formal" | "casual" | "friendly" | "professional";
+export type ToneType = "formal" | "casual" | "friendly" | "short";
 
 export interface ToneOption {
   id: ToneType;
   name: string;
   description: string;
   icon: string;
-  color: string;
-  backgroundColor: string;
 }
 
 export const TONE_OPTIONS: ToneOption[] = [
   {
     id: "formal",
-    name: "정중한 톤",
-    description: "공식적이고 예의바른 표현",
+    name: "정중",
+    description: "문서나 이메일에 딱!",
     icon: "🎩",
-    color: "#495057",
-    backgroundColor: "#f8f9fa",
   },
   {
     id: "casual",
-    name: "캐주얼 톤",
-    description: "친근하고 편안한 표현",
+    name: "캐주얼",
+    description: "편하고 자연스러운 문장",
     icon: "😊",
-    color: "#28a745",
-    backgroundColor: "#d4edda",
   },
   {
     id: "friendly",
-    name: "친근한 톤",
-    description: "따뜻하고 친근한 표현",
+    name: "친근",
+    description: "부드럽고 따뜻한 표현",
     icon: "🤝",
-    color: "#007bff",
-    backgroundColor: "#cce7ff",
   },
   {
-    id: "professional",
-    name: "전문적인 톤",
-    description: "업무용 전문적 표현",
-    icon: "💼",
-    color: "#6f42c1",
-    backgroundColor: "#e2d9f3",
+    id: "short",
+    name: "간결",
+    description: "핵심만 짧고 명확하게",
+    icon: "✂️",
   },
 ];
 
