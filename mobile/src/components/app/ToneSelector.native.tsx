@@ -1,12 +1,6 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
-import { ToneType, TONE_OPTIONS } from "../../types/tone";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { TONE_OPTIONS, ToneType } from "../../types/tone";
 
 interface ToneSelectorProps {
   selectedTone: ToneType;
@@ -24,11 +18,7 @@ export const ToneSelector: React.FC<ToneSelectorProps> = ({
   return (
     <View style={styles.container} testID={testID}>
       <Text style={styles.label}>변환할 톤을 선택하세요</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.optionsContainer}
-      >
+      <View style={styles.gridContainer}>
         {TONE_OPTIONS.map((option) => (
           <TouchableOpacity
             key={option.id}
@@ -44,28 +34,25 @@ export const ToneSelector: React.FC<ToneSelectorProps> = ({
             accessibilityState={{
               selected: selectedTone === option.id,
               disabled,
-            }}
-          >
+            }}>
             <Text style={styles.optionIcon}>{option.icon}</Text>
             <Text
               style={[
                 styles.optionName,
                 selectedTone === option.id && styles.selectedOptionName,
-              ]}
-            >
+              ]}>
               {option.name}
             </Text>
             <Text
               style={[
                 styles.optionDescription,
                 selectedTone === option.id && styles.selectedOptionDescription,
-              ]}
-            >
+              ]}>
               {option.description}
             </Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -80,15 +67,16 @@ const styles = StyleSheet.create({
     color: "#495057",
     marginBottom: 12,
   },
-  optionsContainer: {
-    paddingHorizontal: 4,
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   option: {
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,
-    marginRight: 12,
-    minWidth: 120,
+    width: "48%",
     alignItems: "center",
     borderWidth: 2,
     borderColor: "#e9ecef",
@@ -100,6 +88,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    minHeight: 100,
+    marginBottom: 12,
   },
   selectedOption: {
     borderColor: "#007bff",

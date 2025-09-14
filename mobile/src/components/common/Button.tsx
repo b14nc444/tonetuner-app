@@ -1,11 +1,9 @@
 import React from "react";
 import {
-  TouchableOpacity,
-  Text,
   ActivityIndicator,
   StyleSheet,
-  ViewStyle,
-  TextStyle,
+  Text,
+  TouchableOpacity,
 } from "react-native";
 import { ButtonProps } from "../../types/ui";
 
@@ -75,8 +73,7 @@ export const Button: React.FC<ButtonProps> = ({
       testID={testID}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
-      accessibilityRole="button"
-    >
+      accessibilityRole="button">
       {renderContent()}
     </TouchableOpacity>
   );

@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ErrorDisplayProps } from "../../types/ui";
 
 export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
@@ -15,20 +10,11 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   accessibilityLabel,
   accessibilityHint,
 }) => {
-  const containerStyle = [
-    styles.container,
-    styles[variant],
-  ];
+  const containerStyle = [styles.container, styles[variant]];
 
-  const iconStyle = [
-    styles.icon,
-    styles[`${variant}Icon`],
-  ];
+  const iconStyle = [styles.icon, styles[`${variant}Icon`]];
 
-  const textStyle = [
-    styles.text,
-    styles[`${variant}Text`],
-  ];
+  const textStyle = [styles.text, styles[`${variant}Text`]];
 
   const getIcon = () => {
     switch (variant) {
@@ -48,8 +34,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
       style={containerStyle}
       testID={testID}
       accessibilityLabel={accessibilityLabel}
-      accessibilityHint={accessibilityHint}
-    >
+      accessibilityHint={accessibilityHint}>
       <Text style={iconStyle}>{getIcon()}</Text>
       <Text style={textStyle} numberOfLines={3}>
         {error}
@@ -58,8 +43,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
         <TouchableOpacity
           style={styles.dismissButton}
           onPress={onDismiss}
-          accessibilityLabel="에러 메시지 닫기"
-        >
+          accessibilityLabel="에러 메시지 닫기">
           <Text style={styles.dismissText}>✕</Text>
         </TouchableOpacity>
       )}

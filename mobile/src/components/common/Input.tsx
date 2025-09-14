@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TextInputProps,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { InputProps } from "../../types/ui";
 
 export const Input: React.FC<InputProps> = ({
@@ -37,7 +31,7 @@ export const Input: React.FC<InputProps> = ({
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
-      
+
       <TextInput
         style={inputStyle}
         value={value}
@@ -56,11 +50,11 @@ export const Input: React.FC<InputProps> = ({
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
       />
-      
+
       {helperText && !error && (
         <Text style={styles.helperText}>{helperText}</Text>
       )}
-      
+
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );

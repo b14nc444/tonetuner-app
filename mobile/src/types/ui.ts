@@ -114,27 +114,82 @@ export interface ThemeSpacing {
 export interface ThemeTypography {
   h1: {
     fontSize: number;
-    fontWeight: "bold" | "normal" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900";
+    fontWeight:
+      | "bold"
+      | "normal"
+      | "100"
+      | "200"
+      | "300"
+      | "400"
+      | "500"
+      | "600"
+      | "700"
+      | "800"
+      | "900";
     lineHeight: number;
   };
   h2: {
     fontSize: number;
-    fontWeight: "bold" | "normal" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900";
+    fontWeight:
+      | "bold"
+      | "normal"
+      | "100"
+      | "200"
+      | "300"
+      | "400"
+      | "500"
+      | "600"
+      | "700"
+      | "800"
+      | "900";
     lineHeight: number;
   };
   h3: {
     fontSize: number;
-    fontWeight: "bold" | "normal" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900";
+    fontWeight:
+      | "bold"
+      | "normal"
+      | "100"
+      | "200"
+      | "300"
+      | "400"
+      | "500"
+      | "600"
+      | "700"
+      | "800"
+      | "900";
     lineHeight: number;
   };
   body: {
     fontSize: number;
-    fontWeight: "bold" | "normal" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900";
+    fontWeight:
+      | "bold"
+      | "normal"
+      | "100"
+      | "200"
+      | "300"
+      | "400"
+      | "500"
+      | "600"
+      | "700"
+      | "800"
+      | "900";
     lineHeight: number;
   };
   caption: {
     fontSize: number;
-    fontWeight: "bold" | "normal" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900";
+    fontWeight:
+      | "bold"
+      | "normal"
+      | "100"
+      | "200"
+      | "300"
+      | "400"
+      | "500"
+      | "600"
+      | "700"
+      | "800"
+      | "900";
     lineHeight: number;
   };
 }

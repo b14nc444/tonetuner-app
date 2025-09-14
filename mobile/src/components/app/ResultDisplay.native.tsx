@@ -1,15 +1,8 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  Clipboard,
-} from "react-native";
-import { ToneConversionResponse, TONE_OPTIONS } from "../../types/tone";
-import { Card } from "../common/Card";
+import { Alert, Clipboard, StyleSheet, Text, View } from "react-native";
+import { TONE_OPTIONS, ToneConversionResponse } from "../../types/tone";
 import { Button } from "../common/Button";
+import { Card } from "../common/Card";
 
 interface ResultDisplayProps {
   result: ToneConversionResponse | null;
@@ -99,9 +92,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
         )}
 
         <View style={styles.statsContainer}>
-          <Text style={styles.statsText}>
-            단어 수: {result.wordCount}개
-          </Text>
+          <Text style={styles.statsText}>단어 수: {result.wordCount}개</Text>
           <Text style={styles.statsText}>
             처리 시간: {result.processingTime}ms
           </Text>

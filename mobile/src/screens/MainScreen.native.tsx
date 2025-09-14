@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+  Button,
+  Card,
+  ErrorDisplay,
+  ResultDisplay,
+  TextInput,
+  ToneSelector,
+} from "../components";
 import { useAppStore } from "../stores/appStore";
-import { TextInput, ToneSelector, ResultDisplay, Button, Card, ErrorDisplay } from "../components";
 
 export const MainScreen: React.FC = () => {
   const {

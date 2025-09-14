@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, ViewStyle } from "react-native";
+import { StyleSheet, View, ViewStyle } from "react-native";
 import { CardProps } from "../../types/ui";
 
 export const Card: React.FC<CardProps> = ({
@@ -26,8 +26,7 @@ export const Card: React.FC<CardProps> = ({
       style={cardStyle}
       testID={testID}
       accessibilityLabel={accessibilityLabel}
-      accessibilityHint={accessibilityHint}
-    >
+      accessibilityHint={accessibilityHint}>
       {children}
     </View>
   );

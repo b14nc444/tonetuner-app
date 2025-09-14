@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { ToneConversionResponse } from "../types";
 
+// TONE_OPTIONS import (컴포넌트 내에서 사용)
+import { TONE_OPTIONS } from "../types";
+
 interface ResultDisplayProps {
   result: ToneConversionResponse | null;
   isLoading?: boolean;
@@ -91,6 +94,3 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
     </div>
   );
 };
-
-// TONE_OPTIONS import (컴포넌트 내에서 사용)
-import { TONE_OPTIONS } from "../types";

@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { AppState, ToneConversionResponse, ToneType, ToneConversionHistory } from "../types";
+import {
+  AppState,
+  ToneConversionHistory,
+  ToneConversionResponse,
+  ToneType,
+} from "../types";
 
 interface AppStore extends AppState {
   // 상태
@@ -66,10 +71,10 @@ export const useAppStore = create<AppStore>()(
               createdAt: result.timestamp,
             };
             return {
-              conversionHistory: [historyItem, ...state.conversionHistory].slice(
-                0,
-                50
-              ), // 최대 50개 유지
+              conversionHistory: [
+                historyItem,
+                ...state.conversionHistory,
+              ].slice(0, 50), // 최대 50개 유지
             };
           }),
         clearHistory: () => set({ conversionHistory: [] }),
