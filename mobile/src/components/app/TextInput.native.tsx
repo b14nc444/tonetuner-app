@@ -1,10 +1,11 @@
 import React from "react";
-import { Input } from "../common/Input";
 import { InputProps } from "../../types/ui";
+import { Input } from "../common/Input";
 
 interface TextInputProps extends Omit<InputProps, "label" | "helperText"> {
   label?: string;
   helperText?: string;
+  disabled?: boolean; // disabled 속성 추가
   onKeyDown?: (e: any) => void; // React Native에서는 키보드 이벤트가 다름
 }
 
@@ -25,7 +26,7 @@ export const TextInput: React.FC<TextInputProps> = ({
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
-      disabled={disabled}
+      editable={!disabled} // disabled를 editable로 변환
       multiline={multiline}
       numberOfLines={numberOfLines}
       label={label}
