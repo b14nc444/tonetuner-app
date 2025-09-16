@@ -145,8 +145,8 @@ export const useAppStore = create<AppStore>()(
             // AI 서비스 import (동적 import로 순환 참조 방지)
             const { aiService } = await import("../services/aiService");
 
-            // 로컬 시뮬레이션 사용 (실제 AI API 대신)
-            const response = await aiService.convertToneLocal({
+            // 실제 AI API 사용
+            const response = await aiService.convertTone({
               text: inputText,
               tone: selectedTone,
             });
