@@ -59,6 +59,12 @@ export class AIService {
         };
       }
 
+      console.log("🔄 톤 변환 시작:", {
+        tone: request.tone,
+        textLength: request.text.length,
+        apiKey: this.apiKey ? "설정됨" : "설정되지 않음",
+      });
+
       const aiRequest: AIRequest = {
         model: "gpt-3.5-turbo",
         messages: [
@@ -77,7 +83,7 @@ export class AIService {
 
       // 재시도 로직과 함께 API 호출
       const response = await this.makeRequestWithRetry(
-        "/v1/chat/completions",
+        "/chat/completions",
         aiRequest
       );
 
@@ -105,10 +111,33 @@ export class AIService {
         },
       };
     } catch (error) {
-      console.error("AI 서비스 오류:", error);
+      console.error("❌ AI 서비스 오류:", error);
+
+      // 구체적인 에러 메시지 제공
+      let errorMessage = this.getErrorMessage(error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("API 키가 설정되지 않았습니다")) {
+          errorMessage =
+            "OpenAI API 키가 설정되지 않았습니다. .env 파일을 확인해주세요.";
+        } else if (error.message.includes("404")) {
+          errorMessage =
+            "API 엔드포인트를 찾을 수 없습니다. API URL을 확인해주세요.";
+        } else if (error.message.includes("401")) {
+          errorMessage =
+            "API 키가 유효하지 않습니다. OpenAI API 키를 확인해주세요.";
+        } else if (error.message.includes("429")) {
+          errorMessage =
+            "API 사용량 한도를 초과했습니다. 잠시 후 다시 시도해주세요.";
+        } else if (error.message.includes("timeout")) {
+          errorMessage =
+            "요청 시간이 초과되었습니다. 네트워크 연결을 확인해주세요.";
+        }
+      }
+
       return {
         success: false,
-        error: this.getErrorMessage(error),
+        error: errorMessage,
       };
     }
   }
@@ -330,8 +359,27 @@ export class AIService {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
+    // API 키 검증
+    if (!this.apiKey || this.apiKey === "your_openai_api_key_here") {
+      const error = new Error(
+        "OpenAI API 키가 설정되지 않았습니다. .env 파일을 확인해주세요."
+      ) as AIServiceError;
+      error.statusCode = 401;
+      error.code = "MISSING_API_KEY";
+      throw error;
+    }
+
+    // API URL 검증
+    if (!this.baseUrl || this.baseUrl === "https://api.openai.com/v1") {
+      console.warn("API 기본 URL이 설정되지 않았습니다. 기본값을 사용합니다.");
+    }
+
+    const fullUrl = `${this.baseUrl}${endpoint}`;
+    console.log("API 요청 URL:", fullUrl);
+    console.log("API 키 존재 여부:", !!this.apiKey);
+
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      const response = await fetch(fullUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -343,15 +391,35 @@ export class AIService {
 
       clearTimeout(timeoutId);
 
+      console.log("API 응답 상태:", response.status, response.statusText);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          console.warn("응답 JSON 파싱 실패:", parseError);
+        }
+
         const errorMessage =
           errorData.error?.message ||
           `HTTP ${response.status}: ${response.statusText}`;
 
+        console.error("API 에러 상세:", {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+          url: fullUrl,
+        });
+
         const error = new Error(errorMessage) as AIServiceError;
         error.statusCode = response.status;
         error.code = errorData.error?.code;
+
+        // 404 에러에 대한 특별한 처리
+        if (response.status === 404) {
+          error.message = `API 엔드포인트를 찾을 수 없습니다. URL을 확인해주세요: ${fullUrl}`;
+        }
 
         throw error;
       }
@@ -370,6 +438,15 @@ export class AIService {
         ) as AIServiceError;
         timeoutError.retryable = true;
         throw timeoutError;
+      }
+
+      // 네트워크 에러에 대한 추가 정보
+      if (error instanceof Error && error.message.includes("fetch")) {
+        console.error("네트워크 에러 상세:", {
+          message: error.message,
+          url: fullUrl,
+          apiKey: this.apiKey ? "설정됨" : "설정되지 않음",
+        });
       }
 
       throw error;
@@ -490,6 +567,13 @@ export class AIService {
   }
 }
 
+// 환경 변수 검증을 먼저 수행
+if (!validateConfig()) {
+  console.error(
+    "❌ 환경 변수 검증 실패 - AI 서비스가 제대로 작동하지 않을 수 있습니다."
+  );
+}
+
 // 기본 인스턴스 생성
 export const aiService = new AIService({
   baseUrl: config.apiBaseUrl,
@@ -497,9 +581,9 @@ export const aiService = new AIService({
   timeout: 30000,
 });
 
-// 환경 변수 검증
-if (!validateConfig()) {
-  console.warn(
-    "환경 변수가 올바르게 설정되지 않았습니다. .env 파일을 확인해주세요."
-  );
+// 설정 로그 출력 (개발 환경에서만)
+if (config.environment === "development") {
+  console.log("🤖 AI 서비스 초기화 완료");
+  console.log("📍 API Base URL:", config.apiBaseUrl);
+  console.log("🔑 API Key 설정됨:", !!config.openaiApiKey);
 }
