@@ -42,72 +42,24 @@ interface AppStore extends AppState {
   convertText: () => Promise<void>;
 }
 
-const initialState: Omit<AppStore, "actions"> = {
+const initialState = {
   // AppState
-  currentScreen: "main",
+  currentScreen: "main" as const,
   isLoading: false,
-  error: null,
-  theme: "light",
-  language: "ko",
+  error: null as string | null,
+  theme: "light" as const,
+  language: "ko" as const,
 
   // AppStore specific
   inputText: "",
-  selectedTone: "formal",
-  conversionResult: null,
-  conversionHistory: [],
+  selectedTone: "formal" as ToneType,
+  conversionResult: null as ToneConversionResponse | null,
+  conversionHistory: [] as ToneConversionHistory[],
 
   // 변환 횟수 관련 초기값
   dailyConversionCount: 0,
-  lastConversionDate: null,
+  lastConversionDate: null as string | null,
   maxDailyConversions: 3,
-  setInputText: function (text: string): void {
-    throw new Error("Function not implemented.");
-  },
-  setSelectedTone: function (tone: ToneType): void {
-    throw new Error("Function not implemented.");
-  },
-  setConversionResult: function (result: ToneConversionResponse | null): void {
-    throw new Error("Function not implemented.");
-  },
-  addToHistory: function (result: ToneConversionResponse): void {
-    throw new Error("Function not implemented.");
-  },
-  clearHistory: function (): void {
-    throw new Error("Function not implemented.");
-  },
-  setLoading: function (isLoading: boolean): void {
-    throw new Error("Function not implemented.");
-  },
-  setError: function (error: string | null): void {
-    throw new Error("Function not implemented.");
-  },
-  setCurrentScreen: function (screen: "main" | "history" | "settings"): void {
-    throw new Error("Function not implemented.");
-  },
-  setTheme: function (theme: "light" | "dark"): void {
-    throw new Error("Function not implemented.");
-  },
-  setLanguage: function (language: "ko" | "en"): void {
-    throw new Error("Function not implemented.");
-  },
-  incrementConversionCount: function (): void {
-    throw new Error("Function not implemented.");
-  },
-  resetDailyCount: function (): void {
-    throw new Error("Function not implemented.");
-  },
-  checkAndResetDailyCount: function (): void {
-    throw new Error("Function not implemented.");
-  },
-  canConvert: function (): boolean {
-    throw new Error("Function not implemented.");
-  },
-  reset: function (): void {
-    throw new Error("Function not implemented.");
-  },
-  convertText: function (): Promise<void> {
-    throw new Error("Function not implemented.");
-  },
 };
 
 export const useAppStore = create<AppStore>()(
@@ -199,10 +151,10 @@ export const useAppStore = create<AppStore>()(
 
         // 복합 액션
         reset: () =>
-          set({
+          set((state) => ({
             ...initialState,
-            conversionHistory: get().conversionHistory, // 히스토리는 유지
-          }),
+            conversionHistory: state.conversionHistory, // 히스토리는 유지
+          })),
 
         // 텍스트 변환 (AI 서비스 호출)
         convertText: async () => {
@@ -255,7 +207,10 @@ export const useAppStore = create<AppStore>()(
               });
             }
           } catch (error) {
-            console.error("변환 오류:", error);
+            // 개발 환경에서만 에러 로그 출력
+            if (process.env.NODE_ENV === "development") {
+              console.error("변환 오류:", error);
+            }
             set({
               error:
                 error instanceof Error

@@ -44,7 +44,10 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
       // 2초 후 복사 성공 상태 초기화
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (error) {
-      console.error("복사 실패:", error);
+      // 개발 환경에서만 에러 로그 출력
+      if (process.env.NODE_ENV === "development") {
+        console.error("복사 실패:", error);
+      }
       Toast.show({
         type: "error",
         text1: "복사에 실패했습니다. 잠시 후 다시 시도해주세요.",

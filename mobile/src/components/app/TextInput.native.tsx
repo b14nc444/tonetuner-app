@@ -27,7 +27,6 @@ export const TextInput: React.FC<TextInputProps> = ({
 }) => {
   const currentLength = value?.length || 0;
   const isNearLimit = currentLength >= 950;
-  const isAtLimit = currentLength >= maxLength;
 
   const handleTextChange = (text: string) => {
     // 최대 글자 수 제한

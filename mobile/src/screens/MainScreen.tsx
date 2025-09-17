@@ -39,7 +39,7 @@ export const MainScreen: React.FC = () => {
   };
 
   const handleCopy = (text: string) => {
-    console.log("텍스트가 복사되었습니다:", text);
+    // 텍스트 복사 로직 (필요시 Toast 메시지로 대체)
   };
 
   return (

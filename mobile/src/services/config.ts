@@ -21,10 +21,13 @@ export const config = {
 
 // 환경 변수 검증 함수
 export function validateConfig(): boolean {
-  console.log("환경 변수 검증 중...");
-  console.log("API Base URL:", config.apiBaseUrl);
-  console.log("Environment:", config.environment);
-  console.log("API Key 설정 여부:", !!config.openaiApiKey);
+  // 개발 환경에서만 로그 출력
+  if (process.env.NODE_ENV === "development") {
+    console.log("환경 변수 검증 중...");
+    console.log("API Base URL:", config.apiBaseUrl);
+    console.log("Environment:", config.environment);
+    console.log("API Key 설정 여부:", !!config.openaiApiKey);
+  }
 
   if (!config.openaiApiKey) {
     console.error("❌ OPENAI_API_KEY가 설정되지 않았습니다.");
@@ -55,13 +58,19 @@ export function validateConfig(): boolean {
     return false;
   }
 
-  console.log("✅ 환경 변수가 올바르게 설정되었습니다.");
+  // 개발 환경에서만 성공 로그 출력
+  if (process.env.NODE_ENV === "development") {
+    console.log("✅ 환경 변수가 올바르게 설정되었습니다.");
+  }
   return true;
 }
 
 // 개발 환경에서만 환경 변수 출력 (보안상 주의)
 export function logConfig(): void {
-  if (config.environment === "development") {
+  if (
+    config.environment === "development" &&
+    process.env.NODE_ENV === "development"
+  ) {
     console.log("App Config:", {
       environment: config.environment,
       apiBaseUrl: config.apiBaseUrl,

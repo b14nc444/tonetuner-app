@@ -59,11 +59,13 @@ export class AIService {
         };
       }
 
-      console.log("🔄 톤 변환 시작:", {
-        tone: request.tone,
-        textLength: request.text.length,
-        apiKey: this.apiKey ? "설정됨" : "설정되지 않음",
-      });
+      // 톤 변환 시작 (개발 환경에서만 로그)
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔄 톤 변환 시작:", {
+          tone: request.tone,
+          textLength: request.text.length,
+        });
+      }
 
       const aiRequest: AIRequest = {
         model: "gpt-4o-mini",
@@ -306,7 +308,10 @@ export class AIService {
           `API 요청 실패 (시도 ${attempt + 1}/${this.retryConfig.maxRetries + 1}):`,
           error
         );
-        console.log(`${delay}ms 후 재시도합니다...`);
+        // 재시도 로그 (개발 환경에서만)
+        if (process.env.NODE_ENV === "development") {
+          console.log(`${delay}ms 후 재시도합니다...`);
+        }
 
         await this.sleep(delay);
       }
@@ -375,8 +380,11 @@ export class AIService {
     }
 
     const fullUrl = `${this.baseUrl}${endpoint}`;
-    console.log("API 요청 URL:", fullUrl);
-    console.log("API 키 존재 여부:", !!this.apiKey);
+
+    // API 요청 로그 (개발 환경에서만)
+    if (process.env.NODE_ENV === "development") {
+      console.log("API 요청 URL:", fullUrl);
+    }
 
     try {
       const response = await fetch(fullUrl, {
@@ -391,7 +399,10 @@ export class AIService {
 
       clearTimeout(timeoutId);
 
-      console.log("API 응답 상태:", response.status, response.statusText);
+      // API 응답 상태 로그 (개발 환경에서만)
+      if (process.env.NODE_ENV === "development") {
+        console.log("API 응답 상태:", response.status, response.statusText);
+      }
 
       if (!response.ok) {
         let errorData: any = {};
@@ -582,7 +593,10 @@ export const aiService = new AIService({
 });
 
 // 설정 로그 출력 (개발 환경에서만)
-if (config.environment === "development") {
+if (
+  config.environment === "development" &&
+  process.env.NODE_ENV === "development"
+) {
   console.log("🤖 AI 서비스 초기화 완료");
   console.log("📍 API Base URL:", config.apiBaseUrl);
   console.log("🔑 API Key 설정됨:", !!config.openaiApiKey);
