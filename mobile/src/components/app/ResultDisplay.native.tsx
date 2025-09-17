@@ -84,7 +84,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
           <Text style={styles.resultText}>{result.convertedText}</Text>
         </View>
 
-        {result.originalText !== result.convertedText && (
+        {/* {result.originalText !== result.convertedText && (
           <View style={styles.originalContainer}>
             <Text style={styles.originalLabel}>원본 텍스트</Text>
             <Text style={styles.originalText}>{result.originalText}</Text>
@@ -96,7 +96,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
           <Text style={styles.statsText}>
             처리 시간: {result.processingTime}ms
           </Text>
-        </View>
+        </View> */}
       </View>
     </Card>
   );

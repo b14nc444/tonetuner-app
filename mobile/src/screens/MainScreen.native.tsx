@@ -95,7 +95,7 @@ export const MainScreen: React.FC = () => {
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          &copy; 2024 ToneTuner. AI로 더 나은 소통을 만들어가요.
+          &copy; 2025 엎질. All rights reserved.
         </Text>
       </View>
     </ScrollView>

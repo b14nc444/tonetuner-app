@@ -15,9 +15,9 @@ export const TextInput: React.FC<TextInputProps> = ({
   placeholder = "변환할 텍스트를 입력하세요",
   disabled = false,
   multiline = true,
-  numberOfLines = 4,
+  numberOfLines = 6,
   label = "변환할 텍스트를 입력하세요",
-  helperText = "💡 Ctrl+Enter를 눌러 빠르게 변환할 수 있습니다",
+  // helperText = "💡 Ctrl+Enter를 눌러 빠르게 변환할 수 있습니다",
   onKeyDown,
   ...props
 }) => {
@@ -30,7 +30,7 @@ export const TextInput: React.FC<TextInputProps> = ({
       multiline={multiline}
       numberOfLines={numberOfLines}
       label={label}
-      helperText={helperText}
+      // helperText={helperText}
       {...props}
     />
   );

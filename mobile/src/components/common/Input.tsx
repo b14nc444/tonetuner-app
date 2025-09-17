@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
   },
   multilineInput: {
-    minHeight: 100,
+    minHeight: 120,
     textAlignVertical: "top",
   },
   errorInput: {
