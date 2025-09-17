@@ -25,6 +25,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
   const [copySuccess, setCopySuccess] = useState(false);
   const dailyCount = useDailyConversionCount();
   const maxCount = useMaxDailyConversions();
+  const isMaxReached = dailyCount >= maxCount;
 
   const handleCopy = async () => {
     if (!result?.convertedText) return;
@@ -75,7 +76,8 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
         <View style={styles.header}>
           <Text style={styles.title}>변환 결과</Text>
           <View style={styles.usageContainer}>
-            <Text style={styles.usageText}>
+            <Text
+              style={[styles.usageText, isMaxReached && styles.usageTextMax]}>
               오늘 사용: {dailyCount}/{maxCount}회
             </Text>
           </View>
@@ -174,6 +176,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#1976d2",
     fontWeight: "500",
+  },
+  usageTextMax: {
+    color: "#dc3545",
+    fontWeight: "600",
   },
   resultContainer: {
     backgroundColor: "#f8f9fa",

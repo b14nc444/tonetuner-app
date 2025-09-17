@@ -10,7 +10,12 @@ import {
   TextInput,
   ToneSelector,
 } from "../components";
-import { useAppStore, useCanConvert } from "../stores/appStore";
+import {
+  useAppStore,
+  useCanConvert,
+  useDailyConversionCount,
+  useMaxDailyConversions,
+} from "../stores/appStore";
 
 export const MainScreen: React.FC = () => {
   const {
@@ -26,6 +31,9 @@ export const MainScreen: React.FC = () => {
   } = useAppStore();
 
   const canConvert = useCanConvert();
+  const dailyCount = useDailyConversionCount();
+  const maxCount = useMaxDailyConversions();
+  const isMaxReached = dailyCount >= maxCount;
 
   // 앱 시작 시 날짜 체크 및 카운트 리셋
   useEffect(() => {
@@ -98,6 +106,15 @@ export const MainScreen: React.FC = () => {
               icon="✨"
               testID="main-convert-button"
             />
+
+            {isMaxReached && (
+              <View style={styles.warningContainer}>
+                <Text style={styles.warningText}>
+                  오늘의 변환 횟수를 모두 사용하셨습니다. 내일 다시
+                  시도해주세요.
+                </Text>
+              </View>
+            )}
           </Card>
 
           <View style={styles.spacer} />
@@ -218,5 +235,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     textAlign: "center",
+  },
+  warningContainer: {
+    marginTop: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: "#fff3cd",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ffeaa7",
+  },
+  warningText: {
+    fontSize: 14,
+    color: "#856404",
+    textAlign: "center",
+    fontWeight: "500",
+    lineHeight: 20,
   },
 });
