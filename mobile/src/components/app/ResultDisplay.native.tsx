@@ -74,15 +74,11 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>변환 결과</Text>
-          <Button
-            title={copySuccess ? "복사됨" : "복사"}
-            onPress={handleCopy}
-            variant="outline"
-            size="small"
-            icon={copySuccess ? "✅" : "📋"}
-            disabled={!result.convertedText}
-            testID={`${testID}-copy-button`}
-          />
+          <View style={styles.usageContainer}>
+            <Text style={styles.usageText}>
+              오늘 사용: {dailyCount}/{maxCount}회
+            </Text>
+          </View>
         </View>
 
         <View style={styles.metaContainer}>
@@ -92,15 +88,15 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
               <Text style={styles.badgeText}>{toneOption.name}</Text>
             </View>
           )}
-          <Text style={styles.timestamp}>
-            {new Date(result.timestamp).toLocaleTimeString()}
-          </Text>
-        </View>
-
-        <View style={styles.usageContainer}>
-          <Text style={styles.usageText}>
-            오늘 사용: {dailyCount}/{maxCount}회
-          </Text>
+          <Button
+            title={copySuccess ? "복사됨" : "복사"}
+            onPress={handleCopy}
+            variant="outline"
+            size="small"
+            icon={copySuccess ? "✅" : "📋"}
+            disabled={!result.convertedText}
+            testID={`${testID}-copy-button`}
+          />
         </View>
 
         <View style={styles.resultContainer}>
@@ -171,16 +167,7 @@ const styles = StyleSheet.create({
     color: "#495057",
     fontWeight: "500",
   },
-  timestamp: {
-    fontSize: 12,
-    color: "#6c757d",
-  },
   usageContainer: {
-    backgroundColor: "#e3f2fd",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 16,
     alignItems: "center",
   },
   usageText: {
