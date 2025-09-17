@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Alert, Clipboard, StyleSheet, Text, View } from "react-native";
+import { Clipboard, StyleSheet, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { TONE_OPTIONS, ToneConversionResponse } from "../../types/tone";
 import { Button } from "../common/Button";
 import { Card } from "../common/Card";
@@ -26,13 +27,23 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
       await Clipboard.setString(result.convertedText);
       setCopySuccess(true);
       onCopy?.(result.convertedText);
-      Alert.alert("복사됨", "텍스트가 클립보드에 복사되었습니다.");
+      Toast.show({
+        type: "success",
+        text1: "텍스트가 복사되었습니다.",
+        position: "bottom",
+        visibilityTime: 2000,
+      });
 
       // 2초 후 복사 성공 상태 초기화
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (error) {
       console.error("복사 실패:", error);
-      Alert.alert("오류", "복사에 실패했습니다.");
+      Toast.show({
+        type: "error",
+        text1: "복사에 실패했습니다. 잠시 후 다시 시도해주세요.",
+        position: "bottom",
+        visibilityTime: 2000,
+      });
     }
   };
 

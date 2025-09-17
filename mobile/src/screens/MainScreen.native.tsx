@@ -1,5 +1,7 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 import {
   Button,
   Card,
@@ -42,63 +44,96 @@ export const MainScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.logo}>🎵 ToneTuner</Text>
-        <Text style={styles.subtitle}>
-          AI로 텍스트 톤을 자유롭게 변환하세요
-        </Text>
-      </View>
+    <>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <LinearGradient
+            colors={["#407eea", "#f093fb"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.logoGradient}>
+            <Text style={styles.logo}>🎵ToneTuner</Text>
+          </LinearGradient>
+          <Text style={styles.subtitle}>원하는 말투로 자유롭게 변환하세요</Text>
+        </View>
 
-      <View style={styles.mainContent}>
-        <Card>
-          <TextInput
-            value={inputText}
-            onChangeText={setInputText}
-            placeholder="예: 안녕하세요, 오늘 날씨가 정말 좋네요!"
-            disabled={isLoading}
-            testID="main-text-input"
-          />
-
-          <ToneSelector
-            selectedTone={selectedTone}
-            onToneChange={setSelectedTone}
-            disabled={isLoading}
-            testID="main-tone-selector"
-          />
-
-          {error && (
-            <ErrorDisplay
-              error={error}
-              onDismiss={() => setError(null)}
-              testID="main-error-display"
+        <View style={styles.mainContent}>
+          <Card>
+            <TextInput
+              value={inputText}
+              onChangeText={setInputText}
+              placeholder="예: 안녕하세요, 오늘 날씨가 정말 좋네요!"
+              disabled={isLoading}
+              testID="main-text-input"
             />
-          )}
 
-          <Button
-            title="변환하기"
-            onPress={handleConvert}
-            disabled={isLoading || !inputText.trim()}
-            loading={isLoading}
-            icon="✨"
-            testID="main-convert-button"
+            <ToneSelector
+              selectedTone={selectedTone}
+              onToneChange={setSelectedTone}
+              disabled={isLoading}
+              testID="main-tone-selector"
+            />
+
+            {error && (
+              <ErrorDisplay
+                error={error}
+                onDismiss={() => setError(null)}
+                testID="main-error-display"
+              />
+            )}
+
+            <Button
+              title="변환하기"
+              onPress={handleConvert}
+              disabled={isLoading || !inputText.trim()}
+              loading={isLoading}
+              icon="✨"
+              testID="main-convert-button"
+            />
+          </Card>
+
+          <View style={styles.spacer} />
+
+          <ResultDisplay
+            result={conversionResult}
+            isLoading={isLoading}
+            onCopy={handleCopy}
+            testID="main-result-display"
           />
-        </Card>
+        </View>
 
-        <ResultDisplay
-          result={conversionResult}
-          isLoading={isLoading}
-          onCopy={handleCopy}
-          testID="main-result-display"
-        />
-      </View>
-
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          &copy; 2025 엎질. All rights reserved.
-        </Text>
-      </View>
-    </ScrollView>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            &copy; 2025 엎질. All rights reserved.
+          </Text>
+        </View>
+      </ScrollView>
+      <Toast
+        config={{
+          success: (props) => (
+            <View style={styles.toastContainer}>
+              <Text style={styles.toastText} numberOfLines={1}>
+                {props.text1}
+              </Text>
+            </View>
+          ),
+          error: (props) => (
+            <View style={styles.toastContainer}>
+              <Text style={styles.toastText} numberOfLines={1}>
+                {props.text1}
+              </Text>
+            </View>
+          ),
+          info: (props) => (
+            <View style={styles.toastContainer}>
+              <Text style={styles.toastText} numberOfLines={1}>
+                {props.text1}
+              </Text>
+            </View>
+          ),
+        }}
+      />
+    </>
   );
 };
 
@@ -109,26 +144,44 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    paddingVertical: 30,
+    paddingTop: 60,
+    paddingBottom: 30,
     paddingHorizontal: 20,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#e9ecef",
   },
+  logoGradient: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 16,
+    marginBottom: 12,
+    alignSelf: "center",
+  },
   logo: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#495057",
-    marginBottom: 8,
+    fontSize: 36,
+    fontWeight: "600",
+    color: "#ffffff",
+    textAlign: "center",
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 4,
   },
   subtitle: {
-    fontSize: 16,
-    color: "#6c757d",
+    fontSize: 17,
+    color: "#7f8c8d",
     textAlign: "center",
+    fontWeight: "500",
+    letterSpacing: -0.3,
+    lineHeight: 24,
   },
   mainContent: {
     flex: 1,
     padding: 20,
+  },
+  spacer: {
+    height: 20,
   },
   footer: {
     alignItems: "center",
@@ -141,6 +194,21 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 12,
     color: "#6c757d",
+    textAlign: "center",
+  },
+  toastContainer: {
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginHorizontal: 20,
+    alignSelf: "center",
+    maxWidth: "90%",
+  },
+  toastText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "500",
     textAlign: "center",
   },
 });
