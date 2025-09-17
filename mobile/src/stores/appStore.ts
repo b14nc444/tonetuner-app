@@ -14,6 +14,11 @@ interface AppStore extends AppState {
   conversionResult: ToneConversionResponse | null;
   conversionHistory: ToneConversionHistory[];
 
+  // 변환 횟수 관련 상태
+  dailyConversionCount: number;
+  lastConversionDate: string | null;
+  maxDailyConversions: number;
+
   // 액션
   setInputText: (text: string) => void;
   setSelectedTone: (tone: ToneType) => void;
@@ -25,6 +30,12 @@ interface AppStore extends AppState {
   setCurrentScreen: (screen: "main" | "history" | "settings") => void;
   setTheme: (theme: "light" | "dark") => void;
   setLanguage: (language: "ko" | "en") => void;
+
+  // 변환 횟수 관련 액션
+  incrementConversionCount: () => void;
+  resetDailyCount: () => void;
+  checkAndResetDailyCount: () => void;
+  canConvert: () => boolean;
 
   // 복합 액션
   reset: () => void;
@@ -44,6 +55,11 @@ const initialState: Omit<AppStore, "actions"> = {
   selectedTone: "formal",
   conversionResult: null,
   conversionHistory: [],
+
+  // 변환 횟수 관련 초기값
+  dailyConversionCount: 0,
+  lastConversionDate: null,
+  maxDailyConversions: 3,
   setInputText: function (text: string): void {
     throw new Error("Function not implemented.");
   },
@@ -72,6 +88,18 @@ const initialState: Omit<AppStore, "actions"> = {
     throw new Error("Function not implemented.");
   },
   setLanguage: function (language: "ko" | "en"): void {
+    throw new Error("Function not implemented.");
+  },
+  incrementConversionCount: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  resetDailyCount: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  checkAndResetDailyCount: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  canConvert: function (): boolean {
     throw new Error("Function not implemented.");
   },
   reset: function (): void {
@@ -123,6 +151,52 @@ export const useAppStore = create<AppStore>()(
         setTheme: (theme: "light" | "dark") => set({ theme }),
         setLanguage: (language: "ko" | "en") => set({ language }),
 
+        // 변환 횟수 관련 액션
+        incrementConversionCount: () =>
+          set((state) => {
+            const today = new Date().toDateString();
+            const newCount =
+              state.lastConversionDate === today
+                ? state.dailyConversionCount + 1
+                : 1;
+
+            return {
+              dailyConversionCount: newCount,
+              lastConversionDate: today,
+            };
+          }),
+
+        resetDailyCount: () =>
+          set({
+            dailyConversionCount: 0,
+            lastConversionDate: null,
+          }),
+
+        checkAndResetDailyCount: () =>
+          set((state) => {
+            const today = new Date().toDateString();
+            if (state.lastConversionDate !== today) {
+              return {
+                dailyConversionCount: 0,
+                lastConversionDate: today,
+              };
+            }
+            return state;
+          }),
+
+        canConvert: () => {
+          const state = get();
+          const today = new Date().toDateString();
+
+          // 날짜가 바뀌었으면 카운트 리셋
+          if (state.lastConversionDate !== today) {
+            state.checkAndResetDailyCount();
+            return true;
+          }
+
+          return state.dailyConversionCount < state.maxDailyConversions;
+        },
+
         // 복합 액션
         reset: () =>
           set({
@@ -132,10 +206,21 @@ export const useAppStore = create<AppStore>()(
 
         // 텍스트 변환 (AI 서비스 호출)
         convertText: async () => {
-          const { inputText, selectedTone } = get();
+          const {
+            inputText,
+            selectedTone,
+            canConvert,
+            incrementConversionCount,
+          } = get();
 
           if (!inputText.trim()) {
             set({ error: "변환할 텍스트를 입력해주세요." });
+            return;
+          }
+
+          // 변환 횟수 체크
+          if (!canConvert()) {
+            set({ error: "오늘의 무료 변환 횟수를 모두 사용하셨습니다." });
             return;
           }
 
@@ -153,6 +238,9 @@ export const useAppStore = create<AppStore>()(
 
             if (response.success && response.data) {
               const result = response.data;
+              // 변환 성공 시 카운트 증가
+              incrementConversionCount();
+
               set({
                 conversionResult: result,
                 isLoading: false,
@@ -183,6 +271,8 @@ export const useAppStore = create<AppStore>()(
         partialize: (state) => ({
           conversionHistory: state.conversionHistory,
           selectedTone: state.selectedTone,
+          dailyConversionCount: state.dailyConversionCount,
+          lastConversionDate: state.lastConversionDate,
         }),
       }
     ),
@@ -201,3 +291,10 @@ export const useConversionHistory = () =>
   useAppStore((state) => state.conversionHistory);
 export const useIsLoading = () => useAppStore((state) => state.isLoading);
 export const useError = () => useAppStore((state) => state.error);
+
+// 변환 횟수 관련 셀렉터들
+export const useDailyConversionCount = () =>
+  useAppStore((state) => state.dailyConversionCount);
+export const useMaxDailyConversions = () =>
+  useAppStore((state) => state.maxDailyConversions);
+export const useCanConvert = () => useAppStore((state) => state.canConvert());

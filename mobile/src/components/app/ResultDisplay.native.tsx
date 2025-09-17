@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Clipboard, StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
+import {
+  useDailyConversionCount,
+  useMaxDailyConversions,
+} from "../../stores/appStore";
 import { TONE_OPTIONS, ToneConversionResponse } from "../../types/tone";
 import { Button } from "../common/Button";
 import { Card } from "../common/Card";
@@ -19,6 +23,8 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
   testID,
 }) => {
   const [copySuccess, setCopySuccess] = useState(false);
+  const dailyCount = useDailyConversionCount();
+  const maxCount = useMaxDailyConversions();
 
   const handleCopy = async () => {
     if (!result?.convertedText) return;
@@ -88,6 +94,12 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
           )}
           <Text style={styles.timestamp}>
             {new Date(result.timestamp).toLocaleTimeString()}
+          </Text>
+        </View>
+
+        <View style={styles.usageContainer}>
+          <Text style={styles.usageText}>
+            오늘 사용: {dailyCount}/{maxCount}회
           </Text>
         </View>
 
@@ -162,6 +174,19 @@ const styles = StyleSheet.create({
   timestamp: {
     fontSize: 12,
     color: "#6c757d",
+  },
+  usageContainer: {
+    backgroundColor: "#e3f2fd",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  usageText: {
+    fontSize: 14,
+    color: "#1976d2",
+    fontWeight: "500",
   },
   resultContainer: {
     backgroundColor: "#f8f9fa",

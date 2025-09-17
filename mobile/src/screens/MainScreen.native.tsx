@@ -10,7 +10,7 @@ import {
   TextInput,
   ToneSelector,
 } from "../components";
-import { useAppStore } from "../stores/appStore";
+import { useAppStore, useCanConvert } from "../stores/appStore";
 
 export const MainScreen: React.FC = () => {
   const {
@@ -24,6 +24,14 @@ export const MainScreen: React.FC = () => {
     convertText,
     setError,
   } = useAppStore();
+
+  const canConvert = useCanConvert();
+
+  // 앱 시작 시 날짜 체크 및 카운트 리셋
+  useEffect(() => {
+    const { checkAndResetDailyCount } = useAppStore.getState();
+    checkAndResetDailyCount();
+  }, []);
 
   // 에러 메시지 자동 제거
   useEffect(() => {
@@ -85,7 +93,7 @@ export const MainScreen: React.FC = () => {
             <Button
               title="변환하기"
               onPress={handleConvert}
-              disabled={isLoading || !inputText.trim()}
+              disabled={isLoading || !inputText.trim() || !canConvert}
               loading={isLoading}
               icon="✨"
               testID="main-convert-button"
