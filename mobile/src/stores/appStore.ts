@@ -59,7 +59,7 @@ const initialState = {
   // 변환 횟수 관련 초기값
   dailyConversionCount: 0,
   lastConversionDate: null as string | null,
-  maxDailyConversions: 3,
+  maxDailyConversions: 999,
 };
 
 export const useAppStore = create<AppStore>()(
