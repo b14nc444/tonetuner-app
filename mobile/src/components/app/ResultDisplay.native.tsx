@@ -77,7 +77,15 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
     <Card testID={testID}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>변환 결과</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>변환 결과</Text>
+            {toneOption && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeIcon}>{toneOption.icon}</Text>
+                <Text style={styles.badgeText}>{toneOption.name}</Text>
+              </View>
+            )}
+          </View>
           <View style={styles.usageContainer}>
             <Text
               style={[styles.usageText, isMaxReached && styles.usageTextMax]}>
@@ -86,13 +94,11 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
           </View>
         </View>
 
-        <View style={styles.metaContainer}>
-          {toneOption && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeIcon}>{toneOption.icon}</Text>
-              <Text style={styles.badgeText}>{toneOption.name}</Text>
-            </View>
-          )}
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>{result.convertedText}</Text>
+        </View>
+
+        <View style={styles.copyButtonContainer}>
           <Button
             title={copySuccess ? "복사됨" : "복사"}
             onPress={handleCopy}
@@ -102,10 +108,6 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
             disabled={!result.convertedText}
             testID={`${testID}-copy-button`}
           />
-        </View>
-
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultText}>{result.convertedText}</Text>
         </View>
 
         {/* {result.originalText !== result.convertedText && (
@@ -144,16 +146,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   title: {
     fontSize: 18,
     fontWeight: "600",
     color: "#495057",
+    marginRight: 12,
   },
-  metaContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
+  copyButtonContainer: {
+    alignItems: "flex-end",
+    marginTop: 16,
   },
   badge: {
     flexDirection: "row",
@@ -188,7 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
     borderRadius: 8,
     padding: 16,
-    marginBottom: 16,
+    // marginBottom: 16,
   },
   resultText: {
     fontSize: 16,

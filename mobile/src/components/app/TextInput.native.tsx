@@ -20,7 +20,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   disabled = false,
   multiline = true,
   numberOfLines = 6,
-  label = "변환할 텍스트를 입력하세요",
+  label = "변환할 텍스트",
   maxLength = MAX_LENGTH,
   onKeyDown,
   ...props

@@ -1,4 +1,3 @@
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -63,14 +62,10 @@ export const MainScreen: React.FC = () => {
     <>
       <ScrollView style={styles.container}>
         <View style={styles.header}>
-          <LinearGradient
-            colors={["#407eea", "#f093fb"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.logoGradient}>
-            <Text style={styles.logo}>🎵ToneTuner</Text>
-          </LinearGradient>
-          <Text style={styles.subtitle}>원하는 말투로 자유롭게 변환하세요</Text>
+          <Text style={styles.logo}>텍스트 톤 변환기</Text>
+          <Text style={styles.subtitle}>
+            AI로 텍스트 톤을 자유롭게 변환하세요
+          </Text>
         </View>
 
         <View style={styles.mainContent}>
@@ -78,7 +73,7 @@ export const MainScreen: React.FC = () => {
             <TextInput
               value={inputText}
               onChangeText={setInputText}
-              placeholder="예: 안녕하세요, 오늘 날씨가 정말 좋네요!"
+              placeholder="여기에 텍스트를 입력하세요"
               disabled={isLoading}
               testID="main-text-input"
             />
@@ -165,37 +160,27 @@ export const MainScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f8f9fb",
   },
   header: {
     alignItems: "center",
     paddingTop: 60,
-    paddingBottom: 30,
-    paddingHorizontal: 20,
+    paddingBottom: 20,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#e9ecef",
   },
-  logoGradient: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 16,
-    marginBottom: 12,
-    alignSelf: "center",
-  },
   logo: {
-    fontSize: 36,
-    fontWeight: "600",
-    color: "#ffffff",
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#1d1d1d",
     textAlign: "center",
     letterSpacing: 0.5,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 4,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 17,
-    color: "#7f8c8d",
+    color: "#6a6a6a",
     textAlign: "center",
     fontWeight: "500",
     letterSpacing: -0.3,

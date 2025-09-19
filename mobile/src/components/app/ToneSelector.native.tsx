@@ -17,7 +17,7 @@ export const ToneSelector: React.FC<ToneSelectorProps> = ({
 }) => {
   return (
     <View style={styles.container} testID={testID}>
-      <Text style={styles.label}>변환할 톤을 선택하세요</Text>
+      <Text style={styles.label}>변환할 톤 선택</Text>
       <View style={styles.gridContainer}>
         {TONE_OPTIONS.map((option) => (
           <TouchableOpacity
@@ -80,13 +80,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 2,
     borderColor: "#e9ecef",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 1,
+    // },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 2,
     elevation: 2,
     minHeight: 100,
     marginBottom: 12,
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   optionName: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "600",
     color: "#495057",
     textAlign: "center",
