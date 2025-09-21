@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { DevIndicator } from "../components/DevIndicator";
 import { ResultDisplay } from "../components/ResultDisplay";
 import { TextInput } from "../components/TextInput";
 import { ToneSelector } from "../components/ToneSelector";
@@ -44,6 +45,7 @@ export const MainScreen: React.FC = () => {
 
   return (
     <div className="main-screen" onKeyDown={handleKeyDown}>
+      <DevIndicator />
       <header className="header">
         <h1 className="logo">🎵 ToneTuner</h1>
         <p className="subtitle">AI로 텍스트 톤을 자유롭게 변환하세요</p>

@@ -4,6 +4,7 @@ import Toast from "react-native-toast-message";
 import {
   Button,
   Card,
+  DevIndicator,
   ErrorDisplay,
   ResultDisplay,
   TextInput,
@@ -60,6 +61,7 @@ export const MainScreen: React.FC = () => {
 
   return (
     <>
+      <DevIndicator />
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.logo}>텍스트 톤 변환기</Text>

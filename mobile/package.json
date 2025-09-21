@@ -5,13 +5,25 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
+    "start:dev": "NODE_ENV=development expo start",
+    "start:prod": "NODE_ENV=production expo start",
     "android": "expo start --android",
+    "android:dev": "NODE_ENV=development expo start --android",
+    "android:prod": "NODE_ENV=production expo start --android",
     "ios": "expo start --ios",
+    "ios:dev": "NODE_ENV=development expo start --ios",
+    "ios:prod": "NODE_ENV=production expo start --ios",
     "web": "expo start --web",
     "web:start": "react-scripts start",
+    "web:start:dev": "NODE_ENV=development react-scripts start",
+    "web:start:prod": "NODE_ENV=production react-scripts start",
     "web:build": "react-scripts build",
+    "web:build:dev": "NODE_ENV=development react-scripts build",
+    "web:build:prod": "NODE_ENV=production react-scripts build",
     "web:test": "react-scripts test",
-    "web:eject": "react-scripts eject"
+    "web:eject": "react-scripts eject",
+    "build:dev": "NODE_ENV=development expo build",
+    "build:prod": "NODE_ENV=production expo build"
   },
   "dependencies": {
     "@types/node": "^16.18.0",
