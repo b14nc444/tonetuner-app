@@ -33,19 +33,45 @@ export const config = {
   maxRequestsPerMinute:
     (Constants.expoConfig?.extra?.maxRequestsPerMinute as number) || 10,
   maxRequestsPerHour:
-    (Constants.expoConfig?.extra?.maxRequestsPerHour as number) || 100,
+    (Constants.expoConfig?.extra?.maxRequestsPerHour as number) || 50,
   maxRequestsPerDay:
     (Constants.expoConfig?.extra?.maxRequestsPerDay as number) || 1000,
   enableRateLimit:
-    (Constants.expoConfig?.extra?.enableRateLimit as boolean) || false,
+    (Constants.expoConfig?.extra?.enableRateLimit as boolean) || true,
   enableCostMonitoring:
-    (Constants.expoConfig?.extra?.enableCostMonitoring as boolean) || false,
+    (Constants.expoConfig?.extra?.enableCostMonitoring as boolean) || true,
   costAlertThreshold:
     (Constants.expoConfig?.extra?.costAlertThreshold as number) || 10.0,
   dailyCostLimit:
     (Constants.expoConfig?.extra?.dailyCostLimit as number) || 50.0,
   monthlyCostLimit:
     (Constants.expoConfig?.extra?.monthlyCostLimit as number) || 500.0,
+
+  // Redis 설정
+  redis: {
+    host: (Constants.expoConfig?.extra?.redisHost as string) || "localhost",
+    port: (Constants.expoConfig?.extra?.redisPort as number) || 6379,
+    password: (Constants.expoConfig?.extra?.redisPassword as string) || "",
+    db: (Constants.expoConfig?.extra?.redisDb as number) || 0,
+    keyPrefix:
+      (Constants.expoConfig?.extra?.redisKeyPrefix as string) || "tonetuner:",
+  },
+
+  // 사용자별 레이트 리미트 설정
+  userRateLimits: {
+    requestsPerMinute:
+      (Constants.expoConfig?.extra?.userRequestsPerMinute as number) || 5,
+    requestsPerHour:
+      (Constants.expoConfig?.extra?.userRequestsPerHour as number) || 50,
+    requestsPerDay:
+      (Constants.expoConfig?.extra?.userRequestsPerDay as number) || 200,
+    tokensPerMinute:
+      (Constants.expoConfig?.extra?.userTokensPerMinute as number) || 5000,
+    tokensPerHour:
+      (Constants.expoConfig?.extra?.userTokensPerHour as number) || 50000,
+    tokensPerDay:
+      (Constants.expoConfig?.extra?.userTokensPerDay as number) || 200000,
+  },
 };
 
 // 환경 변수 검증 함수
@@ -99,6 +125,20 @@ export function validateConfig(): boolean {
     if (config.dailyCostLimit <= 0 || config.monthlyCostLimit <= 0) {
       console.warn(
         "⚠️ 비용 모니터링이 활성화되었지만 일일/월간 비용 한도가 설정되지 않았습니다."
+      );
+    }
+  }
+
+  // Rate limiting 설정 검증
+  if (config.enableRateLimit) {
+    const limits = config.userRateLimits;
+    if (
+      limits.requestsPerMinute <= 0 ||
+      limits.requestsPerHour <= 0 ||
+      limits.requestsPerDay <= 0
+    ) {
+      console.warn(
+        "⚠️ Rate limiting이 활성화되었지만 요청 제한이 올바르게 설정되지 않았습니다."
       );
     }
   }

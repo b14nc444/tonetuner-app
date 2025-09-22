@@ -7,6 +7,8 @@ import {
   ToneType,
 } from "../types";
 import { config, validateConfig } from "./config";
+import { costMonitor } from "./costMonitor";
+import { rateLimiter, RateLimiter } from "./rateLimiter";
 
 // 재시도 설정 인터페이스
 interface RetryConfig {
@@ -46,7 +48,8 @@ export class AIService {
    * 텍스트 톤 변환 (실제 AI API 호출)
    */
   async convertTone(
-    request: ToneConversionRequest
+    request: ToneConversionRequest,
+    userId?: string
   ): Promise<ApiResponse<ToneConversionResponse>> {
     const startTime = Date.now();
 
@@ -59,13 +62,49 @@ export class AIService {
         };
       }
 
-      // 톤 변환 시작 (개발 환경에서만 로그)
-      if (process.env.NODE_ENV === "development") {
-        console.log("🔄 톤 변환 시작:", {
-          tone: request.tone,
-          textLength: request.text.length,
-        });
+      // 사용자 ID 생성 또는 사용
+      const currentUserId = userId || RateLimiter.generateUserId();
+
+      // Rate limiting 체크 (활성화된 경우에만)
+      if (config.enableRateLimit) {
+        const rateLimitResult = await this.checkRateLimits(
+          currentUserId,
+          request
+        );
+        if (!rateLimitResult.allowed) {
+          return {
+            success: false,
+            error: `요청 한도를 초과했습니다. ${rateLimitResult.retryAfter ? `${rateLimitResult.retryAfter}초 후` : "잠시 후"} 다시 시도해주세요.`,
+          };
+        }
       }
+
+      // 톤 변환 시작 로그
+      const requestStartTime = new Date().toISOString();
+      const estimatedTokens = this.estimateTokens(request.text);
+
+      // 사용자별 요청 현황 조회
+      const requestStatus =
+        await rateLimiter.getUserRequestStatus(currentUserId);
+      const tokenStatus = await rateLimiter.getUserTokenStatus(currentUserId);
+
+      console.log("🔄 톤 변환 요청 시작:", {
+        userId: currentUserId,
+        requestTime: requestStartTime,
+        tone: request.tone,
+        textLength: request.text.length,
+        estimatedTokens: estimatedTokens,
+        requestStatus: {
+          minute: `${requestStatus.minute.current}/${requestStatus.minute.limit} (${requestStatus.minute.remaining} 남음)`,
+          hour: `${requestStatus.hour.current}/${requestStatus.hour.limit} (${requestStatus.hour.remaining} 남음)`,
+          day: `${requestStatus.day.current}/${requestStatus.day.limit} (${requestStatus.day.remaining} 남음)`,
+        },
+        tokenStatus: {
+          minute: `${tokenStatus.minute.current}/${tokenStatus.minute.limit} (${tokenStatus.minute.remaining} 남음)`,
+          hour: `${tokenStatus.hour.current}/${tokenStatus.hour.limit} (${tokenStatus.hour.remaining} 남음)`,
+          day: `${tokenStatus.day.current}/${tokenStatus.day.limit} (${tokenStatus.day.remaining} 남음)`,
+        },
+      });
 
       const aiRequest: AIRequest = {
         model: "gpt-4o-mini",
@@ -99,6 +138,23 @@ export class AIService {
 
       const wordCount = request.text.split(/\s+/).length;
       const processingTime = Date.now() - startTime;
+
+      // 비용 모니터링 (활성화된 경우에만)
+      if (config.enableCostMonitoring) {
+        costMonitor.recordCost(estimatedTokens, currentUserId);
+      }
+
+      // 요청 완료 로그
+      const requestEndTime = new Date().toISOString();
+      console.log("✅ 톤 변환 요청 완료:", {
+        userId: currentUserId,
+        requestTime: requestStartTime,
+        endTime: requestEndTime,
+        processingTime: processingTime,
+        estimatedTokens: estimatedTokens,
+        wordCount: wordCount,
+        tone: request.tone,
+      });
 
       return {
         success: true,
@@ -182,17 +238,92 @@ export class AIService {
   }
 
   /**
-   * 톤별 최대 토큰 수 설정
+   * 최대 토큰 수 설정
    */
   private getMaxTokensForTone(tone: ToneType): number {
-    const maxTokens: Record<ToneType, number> = {
-      formal: 600, // 정중한 표현은 더 길 수 있음
-      casual: 500, // 일반적인 길이
-      friendly: 550, // 친근한 표현은 약간 더 길 수 있음
-      short: 200, // 간결한 표현은 짧게
-    };
+    // 모든 톤에 대해 동일한 최대 토큰 수 사용
+    return config.maxTokensPerRequest;
+  }
 
-    return maxTokens[tone];
+  /**
+   * Rate limiting 체크
+   */
+  private async checkRateLimits(
+    userId: string,
+    request: ToneConversionRequest
+  ): Promise<{ allowed: boolean; retryAfter?: number }> {
+    try {
+      // 요청 수 제한 체크
+      const requestLimits = [
+        {
+          type: "minute" as const,
+          limit: config.userRateLimits.requestsPerMinute,
+        },
+        { type: "hour" as const, limit: config.userRateLimits.requestsPerHour },
+        { type: "day" as const, limit: config.userRateLimits.requestsPerDay },
+      ];
+
+      for (const { type, limit } of requestLimits) {
+        const result = await rateLimiter.checkUserRateLimit(
+          userId,
+          type,
+          limit
+        );
+        if (!result.allowed) {
+          return { allowed: false, retryAfter: result.retryAfter };
+        }
+      }
+
+      // 토큰 사용량 제한 체크
+      const estimatedTokens = this.estimateTokens(request.text);
+      const tokenLimits = [
+        {
+          type: "minute" as const,
+          limit: config.userRateLimits.tokensPerMinute,
+        },
+        { type: "hour" as const, limit: config.userRateLimits.tokensPerHour },
+        { type: "day" as const, limit: config.userRateLimits.tokensPerDay },
+      ];
+
+      for (const { type, limit } of tokenLimits) {
+        const result = await rateLimiter.checkTokenLimit(
+          userId,
+          estimatedTokens,
+          type,
+          limit
+        );
+        if (!result.allowed) {
+          return { allowed: false, retryAfter: result.retryAfter };
+        }
+      }
+
+      return { allowed: true };
+    } catch (error) {
+      console.error("Rate limit 체크 실패:", error);
+      // 실패 시 허용 (서비스 중단 방지)
+      return { allowed: true };
+    }
+  }
+
+  /**
+   * 토큰 수 추정 (간단한 구현)
+   */
+  private estimateTokens(text: string): number {
+    // 한국어 기준으로 대략적인 토큰 수 추정
+    // 실제로는 더 정확한 토크나이저를 사용해야 함
+    const words = text.split(/\s+/).length;
+    const characters = text.length;
+
+    // 한국어는 평균적으로 1토큰당 1.5-2자 정도
+    // 영어는 평균적으로 1토큰당 4자 정도
+    const koreanChars = (text.match(/[가-힣]/g) || []).length;
+    const englishChars = characters - koreanChars;
+
+    const estimatedTokens = Math.ceil(
+      koreanChars / 1.5 + englishChars / 4 + words * 0.5
+    );
+
+    return Math.max(estimatedTokens, 10); // 최소 10토큰
   }
 
   /**
