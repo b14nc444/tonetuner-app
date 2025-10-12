@@ -14,7 +14,6 @@ const appConfig = {
         description: "AI 기반 톤 조정 앱으로 텍스트의 톤을 원하는 스타일로 변환해보세요.",
         orientation: "portrait",
         icon: "./assets/icon.png",
-        newArchEnabled: true,
 
         // 스플래시 스크린 설정
         splash: {
@@ -23,25 +22,34 @@ const appConfig = {
             backgroundColor: "#ffffff",
         },
 
+        // 플러그인 설정
+        plugins: [
+            [
+                "react-native-google-mobile-ads",
+                {
+                    androidAppId: process.env.ADMOB_ANDROID_APP_ID ||
+                        "ca-app-pub-3940256099942544~3347511713",
+                    iosAppId: process.env.ADMOB_IOS_APP_ID ||
+                        "ca-app-pub-3940256099942544~1458002511",
+                    delayAppMeasurementInit: true,
+                },
+            ],
+        ],
+
         // iOS 설정
         ios: {
             bundleIdentifier: "com.tonetuner.app",
-            googleServicesFile: "./GoogleService-Info.plist",
-            buildNumber: "1",
             supportsTablet: true,
             requireFullScreen: false,
             associatedDomains: ["applinks:tonetuner.app"],
-            config: {
-                googleMobileAdsAppId: process.env.ADMOB_IOS_APP_ID ||
-                    "ca-app-pub-3940256099942544~1458002511", // 테스트용 ID
+            infoPlist: {
+                ITSAppUsesNonExemptEncryption: false,
             },
         },
 
         // Android 설정
         android: {
             package: "com.tonetuner.app",
-            googleServicesFile: "./google-services.json",
-            versionCode: 1,
             adaptiveIcon: {
                 foregroundImage: "./assets/adaptive-icon.png",
                 backgroundColor: "#ffffff",
@@ -60,10 +68,6 @@ const appConfig = {
                 }, ],
                 category: ["BROWSABLE", "DEFAULT"],
             }, ],
-            config: {
-                googleMobileAdsAppId: process.env.ADMOB_ANDROID_APP_ID ||
-                    "ca-app-pub-3940256099942544~3347511713", // 테스트용 ID
-            },
         },
 
         // 웹 설정
@@ -129,7 +133,7 @@ const appConfig = {
 
             // EAS 프로젝트 설정
             eas: {
-                projectId: "your-project-id-here", // EAS 프로젝트 ID로 교체 필요
+                projectId: "30550252-de7c-422d-add0-e89d02aece85",
             },
 
             // AdMob 설정
