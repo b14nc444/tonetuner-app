@@ -26,15 +26,21 @@ const appConfig = {
         // iOS 설정
         ios: {
             bundleIdentifier: "com.tonetuner.app",
+            googleServicesFile: "./GoogleService-Info.plist",
             buildNumber: "1",
             supportsTablet: true,
             requireFullScreen: false,
             associatedDomains: ["applinks:tonetuner.app"],
+            config: {
+                googleMobileAdsAppId: process.env.ADMOB_IOS_APP_ID ||
+                    "ca-app-pub-3940256099942544~1458002511", // 테스트용 ID
+            },
         },
 
         // Android 설정
         android: {
             package: "com.tonetuner.app",
+            googleServicesFile: "./google-services.json",
             versionCode: 1,
             adaptiveIcon: {
                 foregroundImage: "./assets/adaptive-icon.png",
@@ -54,6 +60,10 @@ const appConfig = {
                 }, ],
                 category: ["BROWSABLE", "DEFAULT"],
             }, ],
+            config: {
+                googleMobileAdsAppId: process.env.ADMOB_ANDROID_APP_ID ||
+                    "ca-app-pub-3940256099942544~3347511713", // 테스트용 ID
+            },
         },
 
         // 웹 설정
@@ -121,6 +131,16 @@ const appConfig = {
             eas: {
                 projectId: "your-project-id-here", // EAS 프로젝트 ID로 교체 필요
             },
+
+            // AdMob 설정
+            admobAndroidAppId: process.env.ADMOB_ANDROID_APP_ID ||
+                "ca-app-pub-3940256099942544~3347511713",
+            admobIosAppId: process.env.ADMOB_IOS_APP_ID ||
+                "ca-app-pub-3940256099942544~1458002511",
+            admobAndroidBannerAdUnitId: process.env.ADMOB_ANDROID_BANNER_AD_UNIT_ID ||
+                "ca-app-pub-3940256099942544/6300978111",
+            admobIosBannerAdUnitId: process.env.ADMOB_IOS_BANNER_AD_UNIT_ID ||
+                "ca-app-pub-3940256099942544/2934735716",
         },
 
         // 3. 스토어 배포용 메타데이터

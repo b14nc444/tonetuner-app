@@ -89,6 +89,14 @@ ENABLE_COST_MONITORING=true
 COST_ALERT_THRESHOLD=10.0
 DAILY_COST_LIMIT=50.0
 MONTHLY_COST_LIMIT=500.0
+
+# AdMob 설정 (개발 환경에서는 테스트 광고 ID 사용)
+# 테스트용 AdMob 앱 ID (실제 광고 노출 없음)
+ADMOB_ANDROID_APP_ID=ca-app-pub-3940256099942544~3347511713
+ADMOB_IOS_APP_ID=ca-app-pub-3940256099942544~1458002511
+# 테스트용 배너 광고 단위 ID (OS별로 다름)
+ADMOB_ANDROID_BANNER_AD_UNIT_ID=ca-app-pub-3940256099942544/6300978111
+ADMOB_IOS_BANNER_AD_UNIT_ID=ca-app-pub-3940256099942544/2934735716
 ```
 
 ### 프로덕션 환경 (.env.prod)
@@ -117,6 +125,14 @@ ENABLE_COST_MONITORING=true
 COST_ALERT_THRESHOLD=10.0
 DAILY_COST_LIMIT=50.0
 MONTHLY_COST_LIMIT=500.0
+
+# AdMob 설정 (프로덕션 환경에서는 실제 광고 ID 사용)
+# 실제 AdMob 앱 ID를 입력하세요
+ADMOB_ANDROID_APP_ID=your_real_admob_android_app_id_here
+ADMOB_IOS_APP_ID=your_real_admob_ios_app_id_here
+# 실제 배너 광고 단위 ID를 입력하세요 (OS별로 다름)
+ADMOB_ANDROID_BANNER_AD_UNIT_ID=your_real_android_banner_ad_unit_id_here
+ADMOB_IOS_BANNER_AD_UNIT_ID=your_real_ios_banner_ad_unit_id_here
 ```
 
 ## 환경변수 설명
@@ -147,6 +163,31 @@ MONTHLY_COST_LIMIT=500.0
 - `COST_ALERT_THRESHOLD`: 비용 알림 임계값
 - `DAILY_COST_LIMIT`: 일일 비용 한도
 - `MONTHLY_COST_LIMIT`: 월간 비용 한도
+
+### AdMob 광고 설정
+
+- `ADMOB_ANDROID_APP_ID`: Android용 AdMob 앱 ID
+- `ADMOB_IOS_APP_ID`: iOS용 AdMob 앱 ID
+- `ADMOB_ANDROID_BANNER_AD_UNIT_ID`: Android용 배너 광고 단위 ID
+- `ADMOB_IOS_BANNER_AD_UNIT_ID`: iOS용 배너 광고 단위 ID
+
+**테스트용 AdMob ID:**
+
+- Android 앱 ID: `ca-app-pub-3940256099942544~3347511713`
+- iOS 앱 ID: `ca-app-pub-3940256099942544~1458002511`
+- Android 배너 광고 단위 ID: `ca-app-pub-3940256099942544/6300978111`
+- iOS 배너 광고 단위 ID: `ca-app-pub-3940256099942544/2934735716`
+
+**실제 AdMob ID 발급 방법:**
+
+1. [Google AdMob 콘솔](https://apps.admob.com/)에 접속
+2. Android 앱 추가 후 앱 ID 발급
+3. Android 앱에 배너 광고 단위 생성 후 광고 단위 ID 발급
+4. iOS 앱 추가 후 앱 ID 발급
+5. iOS 앱에 배너 광고 단위 생성 후 광고 단위 ID 발급
+6. 발급받은 모든 ID를 `.env.prod` 파일에 입력
+
+**⚠️ 중요:** 각 플랫폼(Android/iOS)마다 별도의 앱과 광고 단위를 생성해야 합니다.
 
 ## 코드에서 환경변수 사용
 

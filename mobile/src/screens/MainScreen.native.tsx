@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import {
+  AdBanner,
   Button,
   Card,
   DevIndicator,
@@ -70,6 +71,9 @@ export const MainScreen: React.FC = () => {
           </Text>
         </View>
 
+        {/* 상단 배너 광고 */}
+        <AdBanner variant="banner" />
+
         <View style={styles.mainContent}>
           <Card>
             <TextInput
@@ -129,6 +133,9 @@ export const MainScreen: React.FC = () => {
             &copy; 2025 엎질. All rights reserved.
           </Text>
         </View>
+
+        {/* 하단 배너 광고 */}
+        <AdBanner variant="banner" />
       </ScrollView>
       <Toast
         config={{
