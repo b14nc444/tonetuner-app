@@ -1,4 +1,5 @@
 import { config } from "./config";
+import { Storage, SyncStorage } from "./storage";
 
 // Rate Limiter 인터페이스
 interface RateLimitResult {
@@ -55,8 +56,8 @@ export class RateLimiter {
 
     try {
       if (typeof window !== "undefined") {
-        // 클라이언트 사이드: localStorage 사용
-        return this.checkRateLimitLocalStorage(key, limit, windowSize, now);
+        // 클라이언트 사이드: Storage 사용
+        return await this.checkRateLimitStorage(key, limit, windowSize, now);
       } else {
         // 서버 사이드: 메모리 기반 구현
         return this.checkRateLimitMemory(key, limit, windowSize, now);
@@ -87,8 +88,8 @@ export class RateLimiter {
 
     try {
       if (typeof window !== "undefined") {
-        // 클라이언트 사이드: localStorage 사용
-        return this.checkTokenLimitLocalStorage(
+        // 클라이언트 사이드: Storage 사용
+        return await this.checkTokenLimitStorage(
           key,
           tokens,
           limit,
@@ -111,16 +112,16 @@ export class RateLimiter {
   }
 
   /**
-   * localStorage 기반 rate limit 체크
+   * Storage 기반 rate limit 체크
    */
-  private checkRateLimitLocalStorage(
+  private async checkRateLimitStorage(
     key: string,
     limit: number,
     windowSize: number,
     now: number
-  ): RateLimitResult {
+  ): Promise<RateLimitResult> {
     try {
-      const stored = localStorage.getItem(key);
+      const stored = await Storage.getItem(key);
       let requests: number[] = [];
 
       if (stored) {
@@ -143,7 +144,7 @@ export class RateLimiter {
 
       // 새 요청 추가
       requests.push(now);
-      localStorage.setItem(key, JSON.stringify(requests));
+      await Storage.setItem(key, JSON.stringify(requests));
 
       return {
         allowed: true,
@@ -151,7 +152,7 @@ export class RateLimiter {
         resetTime: now + windowSize,
       };
     } catch (error) {
-      console.error("localStorage rate limit 체크 실패:", error);
+      console.error("Storage rate limit 체크 실패:", error);
       return {
         allowed: true,
         remaining: limit - 1,
@@ -161,17 +162,17 @@ export class RateLimiter {
   }
 
   /**
-   * localStorage 기반 토큰 제한 체크
+   * Storage 기반 토큰 제한 체크
    */
-  private checkTokenLimitLocalStorage(
+  private async checkTokenLimitStorage(
     key: string,
     tokens: number,
     limit: number,
     windowSize: number,
     now: number
-  ): RateLimitResult {
+  ): Promise<RateLimitResult> {
     try {
-      const stored = localStorage.getItem(key);
+      const stored = await Storage.getItem(key);
       let tokenUsage: Array<{ timestamp: number; tokens: number }> = [];
 
       if (stored) {
@@ -201,7 +202,7 @@ export class RateLimiter {
 
       // 새 토큰 사용량 추가
       tokenUsage.push({ timestamp: now, tokens });
-      localStorage.setItem(key, JSON.stringify(tokenUsage));
+      await Storage.setItem(key, JSON.stringify(tokenUsage));
 
       return {
         allowed: true,
@@ -209,7 +210,7 @@ export class RateLimiter {
         resetTime: now + windowSize,
       };
     } catch (error) {
-      console.error("localStorage token limit 체크 실패:", error);
+      console.error("Storage token limit 체크 실패:", error);
       return {
         allowed: true,
         remaining: limit - tokens,
@@ -306,10 +307,10 @@ export class RateLimiter {
       const dayKey = this.getRateLimitKey(userId, "day");
 
       if (typeof window !== "undefined") {
-        // 클라이언트 사이드: localStorage에서 조회
-        const minuteData = localStorage.getItem(minuteKey);
-        const hourData = localStorage.getItem(hourKey);
-        const dayData = localStorage.getItem(dayKey);
+        // 클라이언트 사이드: Storage에서 조회
+        const minuteData = await Storage.getItem(minuteKey);
+        const hourData = await Storage.getItem(hourKey);
+        const dayData = await Storage.getItem(dayKey);
 
         const now = Date.now();
         const minuteWindow = 60 * 1000;
@@ -389,10 +390,10 @@ export class RateLimiter {
       const dayKey = this.getTokenLimitKey(userId, "day");
 
       if (typeof window !== "undefined") {
-        // 클라이언트 사이드: localStorage에서 조회
-        const minuteData = localStorage.getItem(minuteKey);
-        const hourData = localStorage.getItem(hourKey);
-        const dayData = localStorage.getItem(dayKey);
+        // 클라이언트 사이드: Storage에서 조회
+        const minuteData = await Storage.getItem(minuteKey);
+        const hourData = await Storage.getItem(hourKey);
+        const dayData = await Storage.getItem(dayKey);
 
         const now = Date.now();
         const minuteWindow = 60 * 1000;
@@ -467,10 +468,10 @@ export class RateLimiter {
   static generateUserId(): string {
     if (typeof window !== "undefined") {
       // 클라이언트 사이드: 기존 ID 사용 또는 새로 생성
-      let userId = localStorage.getItem("tonetuner_user_id");
+      let userId = SyncStorage.getItem("tonetuner_user_id");
       if (!userId) {
         userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        localStorage.setItem("tonetuner_user_id", userId);
+        SyncStorage.setItem("tonetuner_user_id", userId);
       }
       return userId;
     } else {

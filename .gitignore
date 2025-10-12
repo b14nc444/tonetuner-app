@@ -107,3 +107,7 @@ jspm_packages/
 
 # TernJS port file
 .tern-port
+
+# Firebase 구성 파일
+GoogleService-Info.plist
+google-services.json

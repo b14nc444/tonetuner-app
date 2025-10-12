@@ -7,7 +7,7 @@ import {
   ToneType,
 } from "../types";
 import { config, validateConfig } from "./config";
-import { costMonitor } from "./costMonitor";
+import { CostMonitor } from "./costMonitor";
 import { rateLimiter, RateLimiter } from "./rateLimiter";
 
 // 재시도 설정 인터페이스
@@ -141,7 +141,10 @@ export class AIService {
 
       // 비용 모니터링 (활성화된 경우에만)
       if (config.enableCostMonitoring) {
-        costMonitor.recordCost(estimatedTokens, currentUserId);
+        await CostMonitor.getInstance().recordCost(
+          estimatedTokens,
+          currentUserId
+        );
       }
 
       // 요청 완료 로그

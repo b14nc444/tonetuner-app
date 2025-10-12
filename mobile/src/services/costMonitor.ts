@@ -1,4 +1,5 @@
 import { config } from "./config";
+import { Storage } from "./storage";
 
 // 비용 모니터링 인터페이스
 interface CostInfo {
@@ -23,7 +24,7 @@ export class CostMonitor {
   private readonly PRICE_PER_1K_TOKENS = 0.00015; // $0.15 per 1K tokens
 
   private constructor() {
-    this.loadDailyCosts();
+    // 비동기 로딩은 필요할 때 수행
   }
 
   static getInstance(): CostMonitor {
@@ -36,9 +37,14 @@ export class CostMonitor {
   /**
    * 비용 기록
    */
-  recordCost(tokens: number, userId?: string): void {
+  async recordCost(tokens: number, userId?: string): Promise<void> {
     if (!config.enableCostMonitoring) {
       return;
+    }
+
+    // 데이터가 로드되지 않았으면 로드
+    if (this.dailyCosts.size === 0) {
+      await this.loadDailyCosts();
     }
 
     const cost = this.calculateCost(tokens);
@@ -57,7 +63,7 @@ export class CostMonitor {
     existingCost.requestCount += 1;
 
     this.dailyCosts.set(today, existingCost);
-    this.saveDailyCosts();
+    await this.saveDailyCosts();
 
     // 비용 알림 체크
     this.checkCostAlerts(existingCost);
@@ -194,13 +200,13 @@ export class CostMonitor {
   /**
    * 일일 비용 데이터 로드
    */
-  private loadDailyCosts(): void {
+  private async loadDailyCosts(): Promise<void> {
     if (typeof window === "undefined") {
       return; // 서버 사이드에서는 로드하지 않음
     }
 
     try {
-      const stored = localStorage.getItem("tonetuner_daily_costs");
+      const stored = await Storage.getItem("tonetuner_daily_costs");
       if (stored) {
         const data = JSON.parse(stored);
         this.dailyCosts = new Map(data);
@@ -213,14 +219,14 @@ export class CostMonitor {
   /**
    * 일일 비용 데이터 저장
    */
-  private saveDailyCosts(): void {
+  private async saveDailyCosts(): Promise<void> {
     if (typeof window === "undefined") {
       return; // 서버 사이드에서는 저장하지 않음
     }
 
     try {
       const data = Array.from(this.dailyCosts.entries());
-      localStorage.setItem("tonetuner_daily_costs", JSON.stringify(data));
+      await Storage.setItem("tonetuner_daily_costs", JSON.stringify(data));
     } catch (error) {
       console.error("일일 비용 데이터 저장 실패:", error);
     }
@@ -229,7 +235,7 @@ export class CostMonitor {
   /**
    * 오래된 데이터 정리 (30일 이상)
    */
-  cleanupOldData(): void {
+  async cleanupOldData(): Promise<void> {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -240,15 +246,15 @@ export class CostMonitor {
       }
     }
 
-    this.saveDailyCosts();
+    await this.saveDailyCosts();
   }
 
   /**
    * 비용 리셋 (개발/테스트용)
    */
-  resetCosts(): void {
+  async resetCosts(): Promise<void> {
     this.dailyCosts.clear();
-    this.saveDailyCosts();
+    await this.saveDailyCosts();
     console.log("💰 비용 데이터가 리셋되었습니다.");
   }
 }
