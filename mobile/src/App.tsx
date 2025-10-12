@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import { MainScreen } from "./screens/MainScreen";
 
-import "./src/services/firebase"; // Firebase 초기화
+// 웹에서는 Crashlytics 미지원 (네이티브 전용)
 
 function App() {
   return (

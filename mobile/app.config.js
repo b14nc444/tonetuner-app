@@ -26,7 +26,6 @@ const appConfig = {
         // iOS 설정
         ios: {
             bundleIdentifier: "com.tonetuner.app",
-            googleServicesFile: "./GoogleService-Info.plist",
             buildNumber: "1",
             supportsTablet: true,
             requireFullScreen: false,
@@ -36,7 +35,6 @@ const appConfig = {
         // Android 설정
         android: {
             package: "com.tonetuner.app",
-            googleServicesFile: "./google-services.json",
             versionCode: 1,
             adaptiveIcon: {
                 foregroundImage: "./assets/adaptive-icon.png",
@@ -64,9 +62,6 @@ const appConfig = {
             bundler: "metro",
             //   output: "static",
         },
-
-        // 플러그인 설정
-        // plugins: [],"expo-splash-screen", "expo-font"],
 
         // 2. 빌드 설정 최적화
         build: {
